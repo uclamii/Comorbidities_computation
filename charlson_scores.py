@@ -67,13 +67,19 @@ def get_combined_comorbidity_df(
         drop=True
     )
 
-    df_charlson_icd9 = get_comorbidity_df(df_icd9, icd_type=9, com_type=com_type)
-    df_charlson_icd10 = get_comorbidity_df(df_icd10, icd_type=10, com_type=com_type)
+    if df_icd9.empty and df_icd10.empty:
+        raise Exception("Both dfs empty no icd codes")
+    elif df_icd9.empty:
+        return get_comorbidity_df(df_icd10, icd_type=10, com_type=com_type)
+    elif df_icd10.empty:
+        return get_comorbidity_df(df_icd9, icd_type=9, com_type=com_type)
+    else:
+        df_coms_icd9 = get_comorbidity_df(df_icd9, icd_type=9, com_type=com_type)
+        df_coms_icd10 = get_comorbidity_df(df_icd10, icd_type=10, com_type=com_type)
+        return combine_comorbidity_dfs(df_coms_icd9, df_coms_icd10)
 
-    return combine_comorbidity_dfs(df_charlson_icd9, df_charlson_icd10)
 
-
-def get_score(df):
+def get_score(df, map="charlson_icd10_quan"):
     """Method to get the charlson or elixhauser score from matrix"""
     # Defining the R script and loading the instance in Python
     r = robjects.r
@@ -86,7 +92,7 @@ def get_score(df):
         df_r = robjects.conversion.py2rpy(df)
 
     # Invoking the R function and getting the result
-    df_result_r = compute_function_r(df_r)
+    df_result_r = compute_function_r(df_r, map)
 
     # Converting it back to a pandas dataframe.
     with localconverter(robjects.default_converter + pandas2ri.converter):
@@ -100,14 +106,43 @@ if __name__ == "__main__":
     path = "Data/aki_diags_for_patients_having_cr_lab.csv"
 
     # # import datasets
-    df_dx = pd.read_csv(path, nrows=100)
-    df_dx.index = df_dx["diagnosis_datetime"]
+    df_dx = pd.read_csv(path)  # , nrows=100000)
+    df_dx["year_month"] = [val[:7] + "-01" for val in df_dx["diagnosis_datetime"]]
 
-    df_charlson = get_combined_comorbidity_df(
-        df_dx,
-        icd_type_col="icd_type",
-        com_type="charlson",
-        cols_comorbidities=["patient_id", "icd_code"],
-    )
+    unique_months = sorted(df_dx.year_month.unique())
 
-    print(get_score(df=df_charlson))
+    # setting index to dates to slice monthly
+    df_dx.index = pd.to_datetime(df_dx["diagnosis_datetime"])
+
+    risk_score_type = "charlson"  # elixhauser
+
+    df_risk = pd.DataFrame()
+    for iter, month_col in tqdm(enumerate(unique_months[1:])):
+        # month_col = unique_months[20]
+        df_month_sample = df_dx[:month_col]
+
+        df_coms = get_combined_comorbidity_df(
+            df_month_sample,
+            icd_type_col="icd_type",
+            com_type=risk_score_type,
+            cols_comorbidities=["patient_id", "icd_code"],
+        )
+
+        pat_ids = df_coms["patient_id"].tolist()
+        pat_risk = get_score(df=df_coms, map=risk_score_type + "_icd10_quan")
+        df_risk_sample = pd.DataFrame(
+            data=np.vstack((pat_ids, pat_risk)).T,
+            columns=["patient_id", "Risk_" + month_col],
+        )
+
+        if iter == 0:
+            df_risk = df_risk_sample
+        else:
+            df_risk = pd.merge(
+                df_risk,
+                df_risk_sample,
+                on="patient_id",
+                how="outer",
+            ).fillna(0)
+
+    print(df_risk)
