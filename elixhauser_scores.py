@@ -116,7 +116,7 @@ if __name__ == "__main__":
     path = "Data/Diagnosis.txt"
 
     # # import datasets
-    df_dx = pd.read_csv(path)  # , nrows=5000)
+    df_dx = pd.read_csv(path)  # , nrows=100)
     # changing to lowercase columns
     df_dx.columns = map(str.lower, df_dx.columns)
     df_dx["diagnosis_datetime"] = pd.to_datetime(df_dx["diagnosis_datetime"]).astype(
@@ -130,8 +130,8 @@ if __name__ == "__main__":
     # setting index to dates to slice monthly
     df_dx.index = pd.to_datetime(df_dx["diagnosis_datetime"])
 
-    risk_score_type = "charlson"  # elixhauser
-    weight_type = "quan"
+    risk_score_type = "elixhauser"  # elixhauser
+    weight_type = "swiss"
     df_risk = pd.DataFrame()
     for iter, month_col in tqdm(enumerate(unique_months[1:])):
         # month_col = unique_months[20]
