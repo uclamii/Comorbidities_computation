@@ -132,8 +132,17 @@ if __name__ == "__main__":
 
     risk_score_type = "elixhauser"  # elixhauser
     weight_type = "swiss"
-    df_risk = pd.DataFrame()
-    for iter, month_col in tqdm(enumerate(unique_months[1:])):
+
+    # assuming first month is zero risk no history data
+    pat_ids = df_dx["patient_id"].unique().tolist()
+    pat_risk = [0] * len(pat_ids)
+    df_risk = pd.DataFrame(
+        data=np.vstack((pat_ids, pat_risk)).T,
+        columns=["patient_id", "Risk_" + unique_months[0]],
+    )
+
+    # loop for monthly estimates
+    for month_col in tqdm(unique_months[1:]):
         # month_col = unique_months[20]
         df_month_sample = df_dx[:month_col]
 
@@ -155,15 +164,13 @@ if __name__ == "__main__":
             columns=["patient_id", "Risk_" + month_col],
         )
 
-        if iter == 0:
-            df_risk = df_risk_sample
-        else:
-            df_risk = pd.merge(
-                df_risk,
-                df_risk_sample,
-                on="patient_id",
-                how="outer",
-            ).fillna(0)
+        # join left to original df with all patients zero risk at time zero
+        df_risk = pd.merge(
+            df_risk,
+            df_risk_sample,
+            on="patient_id",
+            how="left",
+        ).fillna(0)
 
     print("Number of patients computed risk over time: ", len(df_risk))
 
