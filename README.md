@@ -1,3 +1,10 @@
+# Requirements
+
+- Python version: 3.7.4
+- R version 3.4.4
+- use requirements.txt for everything else
+- 
+
 # Introduction 
 TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
 
