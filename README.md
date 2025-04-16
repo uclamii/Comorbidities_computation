@@ -13,8 +13,8 @@ Follow these steps to get started with the project on your local machine.
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/comorbidity-scoring.git
-cd comorbidity-scoring
+git clone https://github.com/your-username/comorbidity-scoring.git](https://github.com/uclamii/Comorbidities_computation.git
+cd Comorbidities_computation
 ```
 
 
