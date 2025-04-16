@@ -1,9 +1,3 @@
-# Requirements
-
-- **Python version**: 3.7.4  
-- **R version**: 3.4.4  
-- All other dependencies are specified in `requirements.txt`
-
 # Introduction
 
 This repository computes **Elixhauser** and **Charlson comorbidity scores** at **monthly intervals** using patient diagnosis data. It supports both **ICD-9** and **ICD-10** codes, enabling longitudinal analysis of comorbidity burden over time.
@@ -31,6 +25,10 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
 
 ## 2. Requirements
+
+- **Python version**: 3.7.4  
+- **R version**: 3.4.4  
+
 For R
 ```
 # installing package
