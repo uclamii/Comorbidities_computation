@@ -1,27 +1,57 @@
 # Requirements
 
-- Python version: 3.7.4
-- R version 3.4.4
-- use requirements.txt for everything else
-- 
+- **Python version**: 3.7.4  
+- **R version**: 3.4.4  
+- All other dependencies are specified in `requirements.txt`
 
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Introduction
+
+This repository computes **Elixhauser** and **Charlson comorbidity scores** at **monthly intervals** using patient diagnosis data. It supports both **ICD-9** and **ICD-10** codes, enabling longitudinal analysis of comorbidity burden over time.
+
+This tool is designed for researchers, data scientists, and healthcare analysts who need to quantify patient comorbidities for modeling or descriptive analytics.
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Follow these steps to get started with the project on your local machine.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## 1. Installation Process
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/comorbidity-scoring.git
+cd comorbidity-scoring
+```
+
+
+Set up a Python virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+
+## 2. Requirements
+For R
+```
+# installing package
+# install only once
+# install.packages("comorbidity")
+# alternatively
+# install.packages("remotes")
+# remotes::install_github("ellessenne/comorbidity")
+```
+
+For Python 
+
+```
+pip install -r requirements.txt
+```
+
+
+## 3.Contribute
+We welcome contributions! Here’s how you can help:
+
+- Fork the repository
+- Create a new branch for your feature or fix
+- Submit a pull request with a clear description of your changes
+- Ensure all code is formatted and tested before submission
